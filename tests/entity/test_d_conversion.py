@@ -3,7 +3,7 @@
 import pytest
 
 from entity.conversion import from_meters, to_meters
-from entity.rates import FEET_PER_METER, YARDS_PER_METER
+from entity.registry import FEET_PER_METER, YARDS_PER_METER
 
 
 def test_d010_meter_to_meters_identity():

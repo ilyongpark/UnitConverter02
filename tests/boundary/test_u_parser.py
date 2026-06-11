@@ -3,7 +3,7 @@
 import pytest
 
 from boundary.messages import INVALID_FORMAT, invalid_number
-from boundary.parser import ParseError, parse
+from boundary.input_parser import ParseError, parse
 
 
 def test_u001_rejects_missing_colon():
