@@ -11,7 +11,7 @@ def test_d010_meter_to_meters_identity():
 
     Track: Logic (D-*)
     Layer: entity
-    검증: meter 2.5 → meter 기준 2.5 (전체 정밀도)
+    검증: meter 2.5 → meter 기준 2.5 (전체 정밀도)ㅎㅎ
     """
     assert to_meters("meter", 2.5) == 2.5
 
