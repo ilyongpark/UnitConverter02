@@ -118,8 +118,8 @@ entity GREEN (12) → control GREEN (3) → boundary GREEN (9) → REFACTOR
 | `tests/control/test_d_convert_use_case.py` | Logic RED 1파일 |
 | `tests/boundary/test_u_*.py` | UI RED 3파일 |
 | `Report/03_Report.md` | 본 보고서 |
-| `Prompting/05_Exported_Transcript.md` | RED 세션 Transcript |
-| `Prompting/06_Exported_Transcript.jsonl` | 원본 대화 로그 (RED 구간) |
+| `Prompting/03_Exported_Transcript.md` | RED 세션 Transcript |
+| `Prompting/03_Exported_Transcript.jsonl` | 원본 대화 로그 (RED 구간) |
 
 ---
 

@@ -81,7 +81,7 @@ UnitConverter02/
 │   └── 01_Report.md
 ├── Prompting/
 │   ├── 01_Exported_Transcript.md
-│   └── 02_Exported_Transcript.jsonl
+│   └── 01_Exported_Transcript.jsonl
 └── README.md
 ```
 
