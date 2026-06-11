@@ -6,7 +6,7 @@
 | 세션 ID | `dee138bd-863d-40da-a8aa-a48f75c69d2b` |
 | Export 일시 | 2026-06-11 |
 | 형식 | Markdown (가독용) |
-| 원본 | `02_Exported_Transcript.jsonl` |
+| 원본 | `01_Exported_Transcript.jsonl` |
 
 ---
 

@@ -116,7 +116,7 @@ PRD에서 모호한 출력·변환 규칙을 테스트로 먼저 고정하고, R
 | `UnitConverter_02d_workbook.md` | Mom Test 기반 워크북 (전체) |
 | `Report/01_Report.md` | 본 보고서 |
 | `Prompting/01_Exported_Transcript.md` | 세션 Transcript Export |
-| `Prompting/02_Exported_Transcript.jsonl` | 원본 대화 로그 (JSONL) |
+| `Prompting/01_Exported_Transcript.jsonl` | 원본 대화 로그 (JSONL) |
 
 ---
 

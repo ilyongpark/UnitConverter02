@@ -3,7 +3,7 @@
 import pytest
 
 from control.convert_use_case import ValidationError, convert_all
-from entity.rates import FEET_PER_METER, YARDS_PER_METER
+from entity.registry import FEET_PER_METER, YARDS_PER_METER
 
 
 def test_d030_converts_meter_input_to_all_units():

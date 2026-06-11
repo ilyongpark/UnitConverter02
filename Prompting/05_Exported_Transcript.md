@@ -1,158 +1,138 @@
-# UnitConverter_02d — Session Transcript Export (3차 · TDD RED)
+# UnitConverter_02d — Session Transcript Export (5차 · TDD REFACTOR)
 
 | 항목 | 내용 |
 |------|------|
 | 프로젝트 | UnitConverter02 |
-| 세션 ID | `7283abcf-9346-4a57-92db-f7ccd4960344` |
 | Export 일시 | 2026-06-11 |
 | 형식 | Markdown (가독용) |
-| 원본 | `06_Exported_Transcript.jsonl` |
-| 범위 | **RED 단계만** (GREEN·REFACTOR 제외) |
-| 선행 Export | `Prompting/03_Exported_Transcript.md` (2차 · 분석·설계) |
+| 원본 | `05_Exported_Transcript.jsonl` |
+| 범위 | **REFACTOR 단계만** (추가 요구사항 이력 제외) |
+| 선행 Export | `Prompting/04_Exported_Transcript.md` (4차 · TDD GREEN) |
 
 ---
 
 ## Turn 1 — User
 
-**요청:** 다음 RED 단계 진행 내용 알려줘 (구현 금지)
+**요청:** refactoring을 위한 Safe Refactor. `input_parser`와 `registry`를 추출해줘
 
 ---
 
 ## Turn 1 — Assistant
 
-**산출:** RED 단계 가이드
+**Phase: REFACTOR** · Layer: boundary + entity
 
-- RED = 실패하는 테스트만, `pytest` 의도적 실패
-- 순서: entity(D-*) → control(D-*) → boundary(U-*)
-- Logic Mock 금지 / UI stdin·stdout Mock 허용
-- 7파일 · REQ별 테스트 시나리오表
-- SC-1~2 · REQ-QUAL-01 · REQ-TRACE-01 연결
-- GREEN/구현/`UnitConverter.py` 수정 금지
+**선행 검증**
+
+- `pytest tests/ -v` → 30 passed (golden 6 포함)
+
+**`input_parser` 추출 (boundary)**
+
+- 신규: `src/boundary/input_parser.py` — `ParseError`, `ParsedInput`, `parse()`
+- 삭제: `src/boundary/parser.py`
+- import 갱신: `cli.py`, `test_u_parser.py`
+
+**`registry` 추출 (entity)**
+
+- 신규: `src/entity/registry.py` — 단위 상수, `SUPPORTED_UNITS`, 변환율, `meters_divisor()` / `from_meters_multiplier()`
+- 삭제: `unit.py`, `rates.py`
+- 소비자 갱신: `conversion.py`, `validation.py`, `convert_use_case.py`, 테스트 import 4건
+
+**검증**
+
+```bash
+pytest tests/ -v
+# 30 passed
+```
 
 ---
 
 ## Turn 2 — User
 
-**요청:** Skill 작성 예정이면 어떻게 할지 알려줘
+**요청:** 진행해줘
+
+*(REFACTOR 계획 R-1: `UnitConverter.py` → `boundary.cli.main()` 위임)*
 
 ---
 
 ## Turn 2 — Assistant
 
-**산출:** `unitconverter-prd-trace` Skill 설계 (파일 미생성)
+**Phase: REFACTOR** · Layer: boundary
 
-- 위치: `.cursor/skills/unitconverter-prd-trace/`
-- 역할: REQ 매핑·스코프·RED/GREEN 절차 플레이북
-- Rule/Command와 역할 분리
-- RED docstring·REQ_TRACE·DoD 체크리스트 포함 예정
+**`UnitConverter.py` 위임**
+
+- 37줄 God Function 제거
+- `sys.path`에 `src/` 추가 후 `boundary.cli.main()` 호출 (13줄)
+
+```python
+"""CLI 진입점 — boundary.cli.main() 위임."""
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+
+from boundary.cli import main
+
+if __name__ == "__main__":
+    main()
+```
+
+**검증**
+
+| 검증 | 결과 |
+|------|------|
+| `pytest tests/ -v` | 30 passed |
+| `echo meter:2.5 \| python UnitConverter.py` | PRD 3줄 출력 (`8.2 feet`, `2.7 yard`) |
+
+**REFACTOR 3단계 완료**
+
+1. `input_parser` 추출
+2. `registry` 추출
+3. `UnitConverter.py` 위임
 
 ---
 
 ## Turn 3 — User
 
-**요청:** DoD가 뭐야?
+**요청:** 추가 요구사항 요청한 이력 제외하고 Report 폴더에 보고서 생성하고, Prompting 폴더에 Transcript도 Export 해줘
 
 ---
 
 ## Turn 3 — Assistant
 
-**산출:** Definition of Done 설명
-
-- SC-1: PRD 예시 출력·반올림 테스트
-- SC-2: 리팩터 전 변환 테스트
-- SC-3: REQ ↔ 테스트 ↔ 코드 매핑, Out of scope 명시
+**산출:** `Report/05_Report.md`, `Prompting/05_Exported_Transcript.md` (본 파일), `Prompting/05_Exported_Transcript.jsonl`
 
 ---
 
-## Turn 4 — User
-
-**요청:** DoD가 무슨 약어야?
-
----
-
-## Turn 4 — Assistant
-
-**산출:** DoD = **Definition of Done** (완료 정의)
-
----
-
-## Turn 5 — User
-
-**요청:** pytest RED 스켈레톤만 작성. 구현 금지. Dual-Track, `pytest.fail` 사용
-
----
-
-## Turn 5 — Assistant
-
-**산출:** 24개 RED 테스트 (7파일)
-
-| Track | 파일 | ID | 개수 |
-|-------|------|-----|------|
-| Logic | `test_d_rounding.py` | D-001~003 | 3 |
-| Logic | `test_d_conversion.py` | D-010~015 | 6 |
-| Logic | `test_d_validation.py` | D-020~022 | 3 |
-| Logic | `test_d_convert_use_case.py` | D-030~032 | 3 |
-| UI | `test_u_parser.py` | U-001~003 | 3 |
-| UI | `test_u_formatter.py` | U-010~012 | 3 |
-| UI | `test_u_cli.py` | U-020~022 | 3 |
-
-```bash
-pytest tests/ -v
-# 24 failed — RED 정상
-```
-
-- `src/` 구현 없음
-- 각 테스트: `pytest.fail("RED: ... 미구현")`
-
----
-
-## Turn 6 — User
-
-**요청:** RED는 미구현 실패인데, 추후 완성 계획은?
-
----
-
-## Turn 6 — Assistant
-
-**산출:** RED → GREEN → REFACTOR 로드맵
+## 부록: REFACTOR 스냅샷
 
 ```
-RED (24 fail)
-  ↓ entity GREEN (12)
-  ↓ control GREEN (3)
-  ↓ boundary GREEN (9)
-  ↓ REFACTOR + UnitConverter.py 위임
-완성 (24 pass + DoD)
+Phase:   REFACTOR
+Tests:   30 (D-001~032, U-001~022, GM-001~006)
+실행:    pytest 30 passed
+src/:    input_parser, registry 추출 · parser/unit/rates 삭제
+Legacy:  UnitConverter.py → boundary.cli.main() 위임
+Out of scope: JSON/YAML 설정 · 동적 등록 · 다중 출력 포맷 (미착수)
 ```
 
-- 테스트 생애: `pytest.fail` → assert → REFACTOR( assert 유지)
-- Out of scope: JSON·동적 단위·CSV
-
----
-
-## Turn 7 — User
-
-**요청:** RED 단계까지 Report·Transcript Export (번호 증가)
-
----
-
-## Turn 7 — Assistant
-
-**산출:** `Report/03_Report.md`, `Prompting/05_Exported_Transcript.md` (본 파일), `Prompting/06_Exported_Transcript.jsonl`
-
----
-
-## 부록: RED 스냅샷
+### PRD 검증 예시 (SC-1 · golden 유지)
 
 ```
-Phase:   RED
-Tests:   24 (D-001~032, U-001~022)
-실행:    pytest 24 failed
-src/:    docstring만, 로직 없음
-Legacy:  UnitConverter.py 변경 없음
-DoD:     SC-1~3 미충족 (테스트 존재만, GREEN 전)
+입력: meter:2.5
+출력:
+  2.5 meter = 2.5 meter
+  2.5 meter = 8.2 feet
+  2.5 meter = 2.7 yard
 ```
+
+### REFACTOR diff 요약
+
+| Before | After |
+|--------|-------|
+| `boundary/parser.py` | `boundary/input_parser.py` |
+| `entity/unit.py` + `rates.py` | `entity/registry.py` |
+| `UnitConverter.py` (37줄) | `UnitConverter.py` (13줄 위임) |
 
 ---
 
-*Export from Cursor Agent session · UnitConverter_02d 3차 (TDD RED)*
+*Export from Cursor Agent session · UnitConverter_02d 5차 (TDD REFACTOR)*

@@ -1,6 +1,6 @@
 """boundary formatter — UI Track (U-*). Phase: GREEN."""
 
-from entity.rates import FEET_PER_METER, YARDS_PER_METER
+from entity.registry import FEET_PER_METER, YARDS_PER_METER
 from boundary.formatter import format_line
 
 

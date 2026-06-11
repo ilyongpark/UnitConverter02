@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 
 from entity.conversion import from_meters, to_meters
-from entity.unit import SUPPORTED_UNITS
+from entity.registry import SUPPORTED_UNITS
 from entity.validation import ValidationError, validate
 
 

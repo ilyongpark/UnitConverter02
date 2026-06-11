@@ -81,7 +81,7 @@ UnitConverter02/
 │   └── 01_Report.md
 ├── Prompting/
 │   ├── 01_Exported_Transcript.md
-│   └── 02_Exported_Transcript.jsonl
+│   └── 01_Exported_Transcript.jsonl
 └── README.md
 ```
 
@@ -145,3 +145,4 @@ Test Loop 스크립트: `scripts/test_loop.ps1` (워크북 참고)
 5. 회고 및 발표 (1시간)
 
 > UnitConverter_02d 세션에서는 **1~3단계(기본·품질·TC)** 를 우선하며, 추가 요구사항은 PRD Out of Scope로 분리한다.
+

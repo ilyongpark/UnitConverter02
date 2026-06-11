@@ -1,6 +1,6 @@
 """entity rounding — Logic Track (D-*). Phase: GREEN."""
 
-from entity.rates import FEET_PER_METER, YARDS_PER_METER
+from entity.registry import FEET_PER_METER, YARDS_PER_METER
 from entity.rounding import round_display
 
 
