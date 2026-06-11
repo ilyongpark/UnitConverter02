@@ -2,7 +2,7 @@
 
 from boundary.formatter import format_line
 from boundary.messages import PROMPT
-from boundary.parser import ParseError, parse
+from boundary.input_parser import ParseError, parse
 from control.convert_use_case import ValidationError, convert_all
 
 

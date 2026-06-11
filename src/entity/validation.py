@@ -1,6 +1,6 @@
 """음수·미지원 단위 도메인 검증 (entity)."""
 
-from entity.unit import SUPPORTED_UNITS
+from entity.registry import SUPPORTED_UNITS
 
 
 class ValidationError(Exception):
