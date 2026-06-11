@@ -99,8 +99,8 @@ tests/
 | `src/` | ECB 패키지 골격 (로직 없음) |
 | `tests/REQ_TRACE.md` | REQ 매핑 템플릿 |
 | `Report/02_Report.md` | 본 보고서 |
-| `Prompting/03_Exported_Transcript.md` | 세션 Transcript Export |
-| `Prompting/04_Exported_Transcript.jsonl` | 원본 대화 로그 (JSONL) |
+| `Prompting/02_Exported_Transcript.md` | 세션 Transcript Export |
+| `Prompting/02_Exported_Transcript.jsonl` | 원본 대화 로그 (JSONL) |
 
 ---
 

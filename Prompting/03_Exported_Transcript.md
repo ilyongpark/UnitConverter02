@@ -1,4 +1,4 @@
-# UnitConverter_02d — Session Transcript Export (2차)
+# UnitConverter_02d — Session Transcript Export (3차 · TDD RED)
 
 | 항목 | 내용 |
 |------|------|
@@ -6,140 +6,153 @@
 | 세션 ID | `7283abcf-9346-4a57-92db-f7ccd4960344` |
 | Export 일시 | 2026-06-11 |
 | 형식 | Markdown (가독용) |
-| 원본 | `04_Exported_Transcript.jsonl` |
-| 선행 Export | `Prompting/01_Exported_Transcript.md` (Mom Test 세션) |
+| 원본 | `03_Exported_Transcript.jsonl` |
+| 범위 | **RED 단계만** (GREEN·REFACTOR 제외) |
+| 선행 Export | `Prompting/02_Exported_Transcript.md` (2차 · 분석·설계) |
 
 ---
 
 ## Turn 1 — User
 
-**요청:** `@README.md` `@UnitConverter.py` 레거시 코드 스멜과 PRD 갭을 목록으로 정리
+**요청:** 다음 RED 단계 진행 내용 알려줘 (구현 금지)
 
 ---
 
 ## Turn 1 — Assistant
 
-**산출:** 레거시 스멜 12항 + PRD 갭 분석
+**산출:** RED 단계 가이드
 
-### 코드 스멜 (요약)
-
-- God Function, SRP 위반, 테스트 불가 구조
-- Magic Number 중복, 변환 로직 인라인·중복
-- 반올림 미적용 → `meter:2.5` 시 `8.2021 feet` (기대 `8.2`)
-- 음수 검증 누락 (REQ-VAL-02)
-- ECB·tests·REQ 추적 부재
-
-### PRD 갭 (요약)
-
-| 상태 | REQ |
-|------|-----|
-| **불일치/미구현** | REQ-OUT-01, REQ-VAL-02, REQ-QUAL-01, REQ-TRACE-01 |
-| **충족** | REQ-IN-01, REQ-CONV-01~03(로직), REQ-VAL-01, REQ-VAL-03, REQ-VAL-04 |
-| **DoD 미충족** | SC-1, SC-2, SC-3 |
+- RED = 실패하는 테스트만, `pytest` 의도적 실패
+- 순서: entity(D-*) → control(D-*) → boundary(U-*)
+- Logic Mock 금지 / UI stdin·stdout Mock 허용
+- 7파일 · REQ별 테스트 시나리오表
+- SC-1~2 · REQ-QUAL-01 · REQ-TRACE-01 연결
+- GREEN/구현/`UnitConverter.py` 수정 금지
 
 ---
 
 ## Turn 2 — User
 
-**요청:** OCP/SRP를 만족하는 Python 패키지 구조 제안 + PRD FR/NFR 매핑
+**요청:** Skill 작성 예정이면 어떻게 할지 알려줘
 
 ---
 
 ## Turn 2 — Assistant
 
-**산출:** ECB 3계층 패키지 구조 제안
+**산출:** `unitconverter-prd-trace` Skill 설계 (파일 미생성)
 
-### 구조
-
-```
-src/entity/   unit, rates, conversion, validation, rounding
-src/control/  convert_use_case
-src/boundary/ parser, formatter, messages, cli
-tests/        entity | control | boundary + REQ_TRACE.md
-```
-
-### FR 매핑 (핵심)
-
-| REQ | 코드 위치 |
-|-----|-----------|
-| REQ-CONV-01~03 | `entity.conversion` |
-| REQ-OUT-01 | `entity.rounding`, `boundary.formatter` |
-| REQ-VAL-02, REQ-VAL-04 | `entity.validation` |
-| REQ-VAL-01, REQ-VAL-03 | `boundary.parser` |
-| REQ-IN-01 | `boundary.cli` |
-
-### NFR 매핑
-
-- NFR-RUNTIME → `boundary.cli`
-- NFR-TEST → `tests/` + pytest
-- NFR-DEPS → entity/control stdlib only
-
-### 구현 순서
-
-entity (D-*) → control (D-*) → boundary (U-*) → `UnitConverter.py` 위임
+- 위치: `.cursor/skills/unitconverter-prd-trace/`
+- 역할: REQ 매핑·스코프·RED/GREEN 절차 플레이북
+- Rule/Command와 역할 분리
+- RED docstring·REQ_TRACE·DoD 체크리스트 포함 예정
 
 ---
 
 ## Turn 3 — User
 
-**요청:** 실제 구현은 하지 말고 패키지 구조만 먼저 잡아줘
+**요청:** DoD가 뭐야?
 
 ---
 
 ## Turn 3 — Assistant
 
-**산출:** ECB 디렉터리·빈 모듈 생성 (docstring만)
+**산출:** Definition of Done 설명
 
-- `src/entity/` 5모듈 + `src/control/` 1모듈 + `src/boundary/` 4모듈
-- `tests/entity|control|boundary/` + `tests/REQ_TRACE.md` 템플릿
-- `UnitConverter.py` 변경 없음
-- `test_*.py` 미생성
+- SC-1: PRD 예시 출력·반올림 테스트
+- SC-2: 리팩터 전 변환 테스트
+- SC-3: REQ ↔ 테스트 ↔ 코드 매핑, Out of scope 명시
 
 ---
 
 ## Turn 4 — User
 
-**요청:** Report/Prompting 문서를 `숫자_문서이름.md` 형식으로 변경  
-(예: `01_Report.md`, `01_Exported_Transcript.md`)
+**요청:** DoD가 무슨 약어야?
 
 ---
 
 ## Turn 4 — Assistant
 
-**산출:** 파일명 변경 + 참조 업데이트
-
-| 이전 | 이후 |
-|------|------|
-| `Report/UnitConverter_02d_Report.md` | `Report/01_Report.md` |
-| `Prompting/UnitConverter_02d_Transcript.md` | `Prompting/01_Exported_Transcript.md` |
-| `Prompting/UnitConverter_02d_Transcript.jsonl` | `Prompting/02_Exported_Transcript.jsonl` |
-
-- `README.md`, `01_Report.md`, `01_Exported_Transcript.md` 내부 경로 갱신
+**산출:** DoD = **Definition of Done** (완료 정의)
 
 ---
 
 ## Turn 5 — User
 
-**요청:** Report 보고서 생성, Prompting Transcript Export — 기존 문서 있으면 숫자 증가
+**요청:** pytest RED 스켈레톤만 작성. 구현 금지. Dual-Track, `pytest.fail` 사용
 
 ---
 
 ## Turn 5 — Assistant
 
-**산출:** `Report/02_Report.md`, `Prompting/03_Exported_Transcript.md` (본 파일), `Prompting/04_Exported_Transcript.jsonl`
+**산출:** 24개 RED 테스트 (7파일)
+
+| Track | 파일 | ID | 개수 |
+|-------|------|-----|------|
+| Logic | `test_d_rounding.py` | D-001~003 | 3 |
+| Logic | `test_d_conversion.py` | D-010~015 | 6 |
+| Logic | `test_d_validation.py` | D-020~022 | 3 |
+| Logic | `test_d_convert_use_case.py` | D-030~032 | 3 |
+| UI | `test_u_parser.py` | U-001~003 | 3 |
+| UI | `test_u_formatter.py` | U-010~012 | 3 |
+| UI | `test_u_cli.py` | U-020~022 | 3 |
+
+```bash
+pytest tests/ -v
+# 24 failed — RED 정상
+```
+
+- `src/` 구현 없음
+- 각 테스트: `pytest.fail("RED: ... 미구현")`
 
 ---
 
-## 부록: 세션 상태 스냅샷
+## Turn 6 — User
+
+**요청:** RED는 미구현 실패인데, 추후 완성 계획은?
+
+---
+
+## Turn 6 — Assistant
+
+**산출:** RED → GREEN → REFACTOR 로드맵
 
 ```
-레거시: UnitConverter.py (37줄, main() 단일 함수)
-PRD:    docs/PRD.md v0.1
-구조:   src/ ECB 골격만 (로직 없음)
-테스트: REQ_TRACE.md 템플릿만 (test_*.py 없음)
-DoD:    SC-1~3 미충족
+RED (24 fail)
+  ↓ entity GREEN (12)
+  ↓ control GREEN (3)
+  ↓ boundary GREEN (9)
+  ↓ REFACTOR + UnitConverter.py 위임
+완성 (24 pass + DoD)
+```
+
+- 테스트 생애: `pytest.fail` → assert → REFACTOR( assert 유지)
+- Out of scope: JSON·동적 단위·CSV
+
+---
+
+## Turn 7 — User
+
+**요청:** RED 단계까지 Report·Transcript Export (번호 증가)
+
+---
+
+## Turn 7 — Assistant
+
+**산출:** `Report/03_Report.md`, `Prompting/03_Exported_Transcript.md` (본 파일), `Prompting/03_Exported_Transcript.jsonl`
+
+---
+
+## 부록: RED 스냅샷
+
+```
+Phase:   RED
+Tests:   24 (D-001~032, U-001~022)
+실행:    pytest 24 failed
+src/:    docstring만, 로직 없음
+Legacy:  UnitConverter.py 변경 없음
+DoD:     SC-1~3 미충족 (테스트 존재만, GREEN 전)
 ```
 
 ---
 
-*Export from Cursor Agent session · UnitConverter_02d 2차 (분석·설계·스캐폴딩)*
+*Export from Cursor Agent session · UnitConverter_02d 3차 (TDD RED)*
