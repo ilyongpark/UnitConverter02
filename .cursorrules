@@ -1,0 +1,79 @@
+# UnitConverter_02 — Cursor Rules (초안)
+
+## 도메인
+
+- 입력: `단위:값` 형식 파싱 (예: `meter:2.5`)
+- 지원 단위: `meter`, `feet`, `yard` (소문자)
+- 변환: meter 기준 환산 후 타 단위 출력
+  - 1 meter = 3.28084 feet
+  - 1 meter = 1.09361 yard
+  - feet ↔ yard는 meter 경유
+- 출력: PRD 예시 준수 (예: `2.5 meter = 8.2 feet`, 소수 1자리 반올림)
+- 품질: OCP · SRP · 입력 검증
+  - 음수 거부
+  - 형식 오류 거부 (`:` 없음, 숫자 아님)
+  - 미지 단위 거부
+
+## 아키텍처 (ECB)
+
+```
+boundary → control → entity
+```
+
+| Layer | 경로 | 책임 |
+|-------|------|------|
+| entity | `src/entity/` | 변환율·단위·도메인 규칙 (순수 로직) |
+| control | `src/control/` | 유스케이스 조율, entity 호출 |
+| boundary | `src/boundary/` | CLI 입출력, 파싱·포맷 |
+
+- **의존 방향:** boundary → control → entity 만 허용
+- **금지:** entity에서 control/boundary/외부 import
+- entity는 프레임워크·I/O에 무관한 순수 Python
+
+## Dual-Track TDD
+
+| Track | 대상 | Mock |
+|-------|------|------|
+| Logic | entity, control | **도메인 Mock 금지** — 실제 변환·검증 로직만 |
+| UI | boundary | **Mock 허용** — stdin/stdout, 프롬프트 대체 가능 |
+
+- 테스트 디렉터리: `tests/entity/`, `tests/control/`, `tests/boundary/`
+- 테스트 ID: `D-*` (Logic), `U-*` (UI)
+- 파일명: `test_d_*` (Logic), `test_u_*` (UI)
+- docstring에 `REQ-` ID · PRD 절 참조
+
+## TDD 규칙
+
+1. **RED** — 실패하는 테스트 먼저 작성
+2. **GREEN** — 테스트 통과에 필요한 최소 코드만
+3. **REFACTOR** — GREEN 유지하며 구조 정리
+
+**금지:** assert 완화, `@pytest.mark.skip`, `xfail`, 테스트 삭제로 GREEN 만들기
+
+작업 시작 시 반드시 선언:
+
+```
+Phase: RED | GREEN | REFACTOR
+Layer: entity | control | boundary
+Track: Logic (D-*) | UI (U-*)
+```
+
+## 작업 순서
+
+1. entity 변환·검증 (D-*)
+2. control 유스케이스 (D-*)
+3. boundary CLI (U-*)
+4. 구조 변경은 Logic 테스트 GREEN 이후
+
+## AI 행동
+
+- 응답·주석·커밋 메시지: **한국어**
+- TDD 단계마다 Phase / Layer / Track 선언
+- 범위 밖(JSON 설정, 동적 단위, 다중 포맷)은 구현하지 않음 — PRD Out of scope 참고
+- **git commit은 사용자 요청 시에만** 수행
+- 요청 범위 외 파일·리팩터 금지 (최소 diff)
+
+## 참고
+
+- 스펙: `docs/PRD.md`
+- 실행: `pytest tests/ -v` (`pyproject.toml` 참고)
