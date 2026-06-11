@@ -146,5 +146,3 @@ Test Loop 스크립트: `scripts/test_loop.ps1` (워크북 참고)
 
 > UnitConverter_02d 세션에서는 **1~3단계(기본·품질·TC)** 를 우선하며, 추가 요구사항은 PRD Out of Scope로 분리한다.
 
-
-# Refactorig To-Do List

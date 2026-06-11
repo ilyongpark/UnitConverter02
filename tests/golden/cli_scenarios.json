@@ -1,0 +1,60 @@
+{
+  "version": "1.0",
+  "phase": "GREEN",
+  "source": "boundary.cli.main",
+  "note": "REFACTOR 전 동작 기준. 레거시 UnitConverter.py는 golden master 아님.",
+  "scenarios": [
+    {
+      "id": "GM-001",
+      "input": "meter:2.5",
+      "req": ["REQ-IN-01", "REQ-OUT-01", "REQ-CONV-01"],
+      "output_lines": [
+        "2.5 meter = 2.5 meter",
+        "2.5 meter = 8.2 feet",
+        "2.5 meter = 2.7 yard"
+      ]
+    },
+    {
+      "id": "GM-002",
+      "input": "feet:10",
+      "req": ["REQ-CONV-02", "REQ-OUT-01"],
+      "output_lines": [
+        "10.0 feet = 3.0 meter",
+        "10.0 feet = 10.0 feet",
+        "10.0 feet = 3.3 yard"
+      ]
+    },
+    {
+      "id": "GM-003",
+      "input": "meter2.5",
+      "req": ["REQ-VAL-01"],
+      "output_lines": [
+        "Invalid format. Use unit:value (ex: meter:2.5)"
+      ]
+    },
+    {
+      "id": "GM-004",
+      "input": "meter:abc",
+      "req": ["REQ-VAL-03"],
+      "output_lines": [
+        "Invalid number: abc"
+      ]
+    },
+    {
+      "id": "GM-005",
+      "input": "meter:-1",
+      "req": ["REQ-VAL-02"],
+      "output_lines": [
+        "Invalid value: negative numbers are not allowed"
+      ]
+    },
+    {
+      "id": "GM-006",
+      "input": "cubit:1",
+      "req": ["REQ-VAL-04"],
+      "output_lines": [
+        "Unknown unit: cubit"
+      ]
+    }
+  ]
+}
