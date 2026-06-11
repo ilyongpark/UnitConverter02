@@ -1,12 +1,19 @@
+# UnitConverter02
 
-## Unit Converter (Python)
-![unit-converter](./unit-converter.jpg)
-### Overview
-- 사용자가 입력한 길이(`단위:값`)를 기반으로, 해당 값을 다른 모든 단위로 변환해 출력하는 프로그램.
-- 새로운 단위를 추가할 때 기존 코드의 변경이 최소화되도록 설계한다.
-- 각 단위 변환 로직은 테스트 코드로 검증한다.
+길이 단위(`meter`, `feet`, `yard`)를 변환하는 Python CLI 프로그램.
 
-### 가상환경 설정 및 실행
+`UnitConverter_02d` 세션에서는 Mom Test 기반으로 **모호한 스펙을 PRD에 명시**하고, 요구사항·테스트·코드를 **REQ 단위로 추적 가능하게** 재구현하는 것을 목표로 한다.
+
+---
+
+## 빠른 시작
+
+### 요구 사항
+
+- Python 3.x
+
+### 설치 및 실행
+
 ```bash
 # 가상환경 생성
 python -m venv venv
@@ -19,65 +26,122 @@ source venv/bin/activate
 
 # 실행
 python UnitConverter.py
-
-# 가상환경 비활성화
-deactivate
 ```
 
-### 기본 요구사항
-1. 사용자 입력 예시:
-   ```
-   meter:2.5
-   ```
-   → 출력:
-   ```
-   2.5 meter = 8.2 feet
-   2.5 meter = 2.7 yard
-   ...
-   ```
+### 사용 예
 
-2. 현재 지원 단위:
-   - meter
-   - feet
-   - yard
+```
+Insert value for converting (ex: meter:2.5): meter:2.5
+2.5 meter = 2.5 meter
+2.5 meter = 8.2 feet
+2.5 meter = 2.7 yard
+```
 
-3. 새로운 단위가 추가될 때도 기존 코드의 변경이 최소화되도록 할 것.
+---
 
-4. 각 단위 간 변환이 정확히 계산되도록 테스트 코드를 작성할 것.
+## 지원 단위 및 변환율
 
-### 비즈니스 로직
-- `1 meter = 3.28084 feet`
-- `1 meter = 1.09361 yard`
-- feet/yard 간의 비율은 meter 기반으로 계산.
+| 변환 | 비율 |
+|------|------|
+| 1 meter | 3.28084 feet |
+| 1 meter | 1.09361 yard |
 
-### 품질 요구사항
-- OCP를 만족하는 설계
-- SRP를 만족하는 클래스 구성
-- 입력 값 검증 (음수, 잘못된 형식, 없는 단위)
+- 모든 변환은 **meter를 기준 단위**로 환산한다.
+- 출력 값은 소수점 **1자리 반올림** (상세: [`docs/PRD.md`](docs/PRD.md))
 
-### 추가 요구사항
-- **설정 외부화**
-   - 변환 비율을 외부 설정 파일(JSON/YAML)에서 로드
-- **동적으로 단위와 비율을 등록할 수 있도록 한다**
-   - 사용자 입력으로 `1 cubit = 0.4572 meter`를 등록하고 사용 가능
-- **출력 포맷 선택 기능** 
-   - JSON / CSV / 표 형태 출력
+---
 
+## 입력 형식
 
-## 생성형AI를 활용한 Activities (6 시간)
+| 항목 | 규칙 |
+|------|------|
+| 형식 | `{unit}:{value}` |
+| 예시 | `meter:2.5`, `feet:10`, `yard:3` |
+| 지원 단위 | `meter`, `feet`, `yard` (소문자) |
+
+### 오류 처리
+
+| 조건 | 메시지 |
+|------|--------|
+| 콜론 없음 | `Invalid format. Use unit:value (ex: meter:2.5)` |
+| 숫자 아님 | `Invalid number: {value}` |
+| 미지원 단위 | `Unknown unit: {unit}` |
+
+---
+
+## 프로젝트 구조
+
+```
+UnitConverter02/
+├── UnitConverter.py              # CLI 진입점 (현재 구현)
+├── docs/
+│   └── PRD.md                    # 요구사항 정의 (REQ ID, DoD)
+├── UnitConverter_02d_workbook.md # Mom Test · 8계층 워크북
+├── Report/
+│   └── 01_Report.md
+├── Prompting/
+│   ├── 01_Exported_Transcript.md
+│   └── 02_Exported_Transcript.jsonl
+└── README.md
+```
+
+---
+
+## 요구사항 요약
+
+상세 스펙은 [`docs/PRD.md`](docs/PRD.md)를 참고한다.
+
+### In Scope (UnitConverter_02d)
+
+- `단위:값` 입력 및 변환 출력
+- meter / feet / yard 변환
+- 입력 검증 (형식, 음수, 미지원 단위)
+- REQ ↔ 테스트 ↔ 코드 추적 (`REQ_TRACE.md` 예정)
+
+### Out of Scope (이번 세션)
+
+- JSON/YAML 설정 외부화
+- 동적 단위 등록 (`1 cubit = 0.4572 meter`)
+- JSON / CSV / 다중 출력 포맷
+- 대규모 OCP/SRP 리팩터링 (테스트 통과 후 최소 변경만)
+
+### 성공 기준 (DoD)
+
+| ID | 내용 |
+|----|------|
+| SC-1 | PRD 예시 출력·반올림 테스트 통과 |
+| SC-2 | 변환 테스트가 리팩터링 전에 존재, 회귀 검출 가능 |
+| SC-3 | In scope REQ 매핑 완료, Out of scope 명시 |
+
+---
+
+## 테스트 (예정)
+
+```bash
+pip install pytest
+pytest tests/ -v
+```
+
+Test Loop 스크립트: `scripts/test_loop.ps1` (워크북 참고)
+
+---
+
+## 관련 문서
+
+| 문서 | 설명 |
+|------|------|
+| [`docs/PRD.md`](docs/PRD.md) | 기능·품질 요구사항, REQ ID, 반올림 규칙 |
+| [`UnitConverter_02d_workbook.md`](UnitConverter_02d_workbook.md) | Mom Test 결과, R-G-I-O, Rule/Command/Test Loop |
+| [`Report/01_Report.md`](Report/01_Report.md) | 세션 보고서 |
+
+---
+
+## 실습 Activities (6시간 · 참고)
 
 1. 문제 코드 및 기본 요구사항 분석 (0.5시간)
-   - 기본 코드구조, 로직 이해
-2. 기본 요구사항 및 품질 요구사항 구현 (2시간)
-   - OCP를 만족하는 인터페이스 구현 
-   - SRP를 만족하도록 클래스 구현 
-   - 입력값 검증을 위한 구현
+2. 기본·품질 요구사항 구현 (2시간)
 3. TC 구현 (0.5시간)
-   - 단위변환 기능 검증 및 입력 값 검증 TC 작성 
 4. 추가 요구사항 구현 (2시간)
-   - 3개 요구사항 구현 및 TC 작성 
 5. 회고 및 발표 (1시간)
-   - 실습 목표와 달성도
-   - AI를 어떻게 활용했나? 도움이 된 순간과 한계는?
-   - TC를 추가해보면서 개선에 미친 영향, TC 작성 팁
-   - 클린코드와 리팩토링에서 느낀 장점과 어려운점
+
+> UnitConverter_02d 세션에서는 **1~3단계(기본·품질·TC)** 를 우선하며, 추가 요구사항은 PRD Out of Scope로 분리한다.
